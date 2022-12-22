@@ -33,7 +33,10 @@ function* registerUserSaga(data) {
 
         if (response.success) {
             yield put(
-                actions.registerUserSuccess({ message: response.message }),
+                actions.registerUserSuccess({
+                    message: response.message,
+                    createSuccess: true,
+                }),
             )
         } else {
             throw new Error(response.message)
@@ -141,7 +144,7 @@ function* deleteUserSaga(data) {
 
             if (
                 reduxStore.activePage < responseSearch.totalPage &&
-                responseSearch.totalPage !== 0
+                responseSearch.totalPage
             ) {
                 yield put(
                     actions.searchPaginationUserRequest({
@@ -149,7 +152,7 @@ function* deleteUserSaga(data) {
                         activePage: reduxStore.activePage,
                     }),
                 )
-            } else if (responseSearch.totalPage === 0) {
+            } else if (!responseSearch.totalPage) {
                 yield put(
                     actions.searchPaginationUserRequest({
                         textSearch: reduxStore.textSearch,
@@ -158,7 +161,7 @@ function* deleteUserSaga(data) {
                 )
             } else if (
                 reduxStore.activePage >= responseSearch.totalPage &&
-                responseSearch.totalPage !== 0
+                responseSearch.totalPage
             ) {
                 yield put(
                     actions.searchPaginationUserRequest({
@@ -178,10 +181,10 @@ function* deleteUserSaga(data) {
             const responseGet = yield API.paginationUser(1)
             if (
                 reduxStore.activePage <= responseGet.totalPage &&
-                responseGet.totalPage !== 0
+                responseGet.totalPage
             ) {
                 yield put(actions.paginationUserRequest(reduxStore.activePage))
-            } else if (responseGet.totalPage === 0) {
+            } else if (!responseGet.totalPage) {
                 yield put(actions.paginationUserRequest(1))
             } else {
                 yield put(actions.paginationUserRequest(responseGet.totalPage))

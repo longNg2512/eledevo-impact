@@ -85,14 +85,6 @@ export const updateUser = async (req, res) => {
         })
 
     try {
-        // Check for existing user
-        // const user = await userModel.findOne({ username })
-
-        // if (user)
-        //     return res
-        //         .status(400)
-        //         .json({ success: false, message: 'Username already take !!!' })
-
         // All good
         const response = await userModel.findByIdAndUpdate(req.params.id, {
             username,

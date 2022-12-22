@@ -12,17 +12,19 @@ import {
     Button,
     Alert,
 } from '@mui/material'
-import { Visibility, VisibilityOff } from '@mui/icons-material'
+import { Add, Visibility, VisibilityOff } from '@mui/icons-material'
 import moment from 'moment'
+import { LoadingButton } from '@mui/lab'
 
 export default class Create extends Component {
     state = {
         openCreate: false,
         openAlert: 'none',
         showPassword: false,
+        openLoading: false,
         username: '',
         password: '',
-        dateOfBirth: '',
+        dateOfBirth: moment().format('YYYY-MM-DD'),
         alertMessage: '',
     }
 
@@ -33,6 +35,17 @@ export default class Create extends Component {
     handleCloseAlert = () => {
         this.setState({ openAlert: 'none' })
     }
+
+    handleClearState = () =>
+        this.setState({
+            openAlert: 'none',
+            showPassword: false,
+            openLoading: false,
+            username: '',
+            password: '',
+            dateOfBirth: moment().format('YYYY-MM-DD'),
+            alertMessage: '',
+        })
 
     componentDidUpdate() {
         if (
@@ -51,14 +64,28 @@ export default class Create extends Component {
             [e.target.name]: e.target.value,
         })
 
+    handleShowAlert = (type, message) => {
+        setTimeout(() => {
+            document.getElementById('alert-1').style.display = 'none'
+        }, 5000)
+        return (
+            <Alert id="alert-1" severity={type} style={{ display: 'flex' }}>
+                {message}
+            </Alert>
+        )
+    }
+
     render() {
         return (
             <div>
                 <Dialog
                     open={this.state.openCreate}
-                    onClose={this.props.handleCloseCreate}
+                    onClose={() => {
+                        this.props.handleCloseCreate()
+                        this.handleClearState()
+                    }}
                 >
-                    <DialogTitle>Thêm tài khoản</DialogTitle>
+                    <DialogTitle>{this.props.dialogName}</DialogTitle>
                     <DialogContent>
                         <FormControl
                             sx={{ m: 1, width: '65ch' }}
@@ -72,6 +99,7 @@ export default class Create extends Component {
                                 name="username"
                                 value={this.state.username}
                                 onChange={this.onChangeInput}
+                                required
                             />
                         </FormControl>
                         <FormControl
@@ -121,8 +149,7 @@ export default class Create extends Component {
                                 id="date-of-birth"
                                 type={'date'}
                                 name="dateOfBirth"
-                                defaultValue={moment().format('YYYY-MM-DD')}
-                                // value={this.state.dateOfBirth}
+                                value={this.state.dateOfBirth}
                                 onChange={this.onChangeInput}
                             />
                         </FormControl>
@@ -132,31 +159,46 @@ export default class Create extends Component {
                         >
                             {this.state.alertMessage}
                         </Alert>
+
+                        {this.props.createSuccess
+                            ? this.handleShowAlert(
+                                  'success',
+                                  `${this.props.dialogName} thành công !`,
+                              )
+                            : null}
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={this.props.handleCloseCreate}>
+                        <Button
+                            onClick={() => {
+                                this.props.handleCloseCreate()
+                                this.handleClearState()
+                            }}
+                        >
                             Đóng
                         </Button>
-                        <Button
+                        <LoadingButton
+                            endIcon={<Add />}
+                            loading={this.props.createLoading ? true : false}
+                            loadingPosition="end"
                             variant="contained"
                             color="success"
                             type="submit"
                             onClick={() => {
-                                if (this.state.username === '') {
+                                if (!this.state.username) {
                                     this.setState({
                                         alertMessage:
                                             'Vui lòng nhập tên đăng nhập !',
                                     })
                                     this.handleClickOpenAlert()
-                                } else if (this.state.password === '') {
+                                } else if (!this.state.password) {
                                     this.setState({
                                         alertMessage:
                                             'Vui lòng nhập mật khẩu !',
                                     })
                                     this.handleClickOpenAlert()
                                 } else if (
-                                    this.state.username !== '' &&
-                                    this.state.password !== ''
+                                    this.state.username &&
+                                    this.state.password
                                 ) {
                                     this.props.registerUser({
                                         username: this.state.username,
@@ -164,20 +206,12 @@ export default class Create extends Component {
                                         dateOfBirth: this.state.dateOfBirth,
                                         userStatus: 'Hoạt động',
                                     })
-                                    this.props.handleCloseCreate()
-                                    this.setState({
-                                        openAlert: 'none',
-                                        showPassword: false,
-                                        username: '',
-                                        password: '',
-                                        dateOfBirth: '',
-                                        alertMessage: '',
-                                    })
+                                    this.handleClearState()
                                 }
                             }}
                         >
-                            Tạo tài khoản
-                        </Button>
+                            {this.props.dialogName}
+                        </LoadingButton>
                     </DialogActions>
                 </Dialog>
             </div>

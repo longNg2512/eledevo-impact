@@ -3,7 +3,7 @@ import moment from 'moment'
 import CreateDialog from './dialog/Create'
 import UpdateDialog from './dialog/Update'
 import DeleteDialog from './dialog/Delete'
-import ReadDialog from './dialog/Read'
+// import ReadDialog from './dialog/Read'
 import LockDialog from './dialog/Lock'
 import * as style from './style'
 import {
@@ -17,6 +17,7 @@ import {
     Box,
     TextField,
     Button,
+    Alert,
 } from '@mui/material'
 import {
     Circle,
@@ -44,6 +45,7 @@ export default class User extends Component {
         password: '',
         userStatus: '',
         dateOfBirth: '',
+        dialogName: '',
     }
 
     handleClickOpenCreate = () => {
@@ -59,7 +61,7 @@ export default class User extends Component {
     }
 
     handleCloseUpdate = () => {
-        this.setState({ openUpdate: false })
+        this.setState({ openUpdate: false, openRead: false })
     }
 
     handleClickOpenDelete = () => {
@@ -75,7 +77,7 @@ export default class User extends Component {
     }
 
     handleCloseRead = () => {
-        this.setState({ openRead: false })
+        this.setState({ openUpdate: false, openRead: false })
     }
 
     handleClickOpenLock = () => {
@@ -84,19 +86,6 @@ export default class User extends Component {
 
     handleCloseLock = () => {
         this.setState({ openLock: false })
-    }
-
-    onChangePagination = (event, value) => {
-        if (event.target.page !== value) {
-            if (this.props.textSearch) {
-                this.props.searchPaginationUser({
-                    textSearch: this.props.textSearch,
-                    activePage: value,
-                })
-            } else {
-                this.props.paginationUser(value)
-            }
-        }
     }
 
     handleClickShowPassword = () => {
@@ -155,6 +144,7 @@ export default class User extends Component {
                                         password: user.password,
                                         dateOfBirth: user.dateOfBirth,
                                         userStatus: user.userStatus,
+                                        dialogName: 'Xem tài khoản',
                                     })
                                     this.handleClickOpenRead()
                                 }}
@@ -169,6 +159,7 @@ export default class User extends Component {
                                         password: user.password,
                                         dateOfBirth: user.dateOfBirth,
                                         userStatus: user.userStatus,
+                                        dialogName: 'Sửa tài khoản',
                                     })
                                     this.handleClickOpenUpdate()
                                 }}
@@ -184,6 +175,7 @@ export default class User extends Component {
                                             password: user.password,
                                             dateOfBirth: user.dateOfBirth,
                                             userStatus: user.userStatus,
+                                            dialogName: 'Khoá tài khoản',
                                         })
                                         this.handleClickOpenLock()
                                     }}
@@ -199,6 +191,7 @@ export default class User extends Component {
                                             password: user.password,
                                             dateOfBirth: user.dateOfBirth,
                                             userStatus: user.userStatus,
+                                            dialogName: 'Khoá tài khoản',
                                         })
                                         this.handleClickOpenLock()
                                     }}
@@ -210,6 +203,7 @@ export default class User extends Component {
                                     this.setState({
                                         id: user._id,
                                         username: user.username,
+                                        dialogName: 'Xoá tài khoản',
                                     })
                                     this.handleClickOpenDelete()
                                 }}
@@ -222,45 +216,6 @@ export default class User extends Component {
         return (
             <div>
                 <div>
-                    <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
-                        <TextField
-                            id="input-with-sx"
-                            label="tìm kiếm"
-                            variant="standard"
-                            name="textSearch"
-                            value={this.state.textSearch}
-                            onChange={this.onChangeInput}
-                            onKeyDown={e => {
-                                if (e.key === 'Enter') {
-                                    this.props.searchPaginationUser({
-                                        textSearch: this.state.textSearch,
-                                        activePage: 1,
-                                    })
-                                }
-                            }}
-                        />
-                        <PersonSearch
-                            sx={{ color: 'action.active', mr: 1, my: 0.5 }}
-                            onClick={() => {
-                                this.props.searchPaginationUser({
-                                    textSearch: this.state.textSearch,
-                                    activePage: 1,
-                                })
-                            }}
-                        />
-                        <Button
-                            style={{ left: '28em' }}
-                            variant="contained"
-                            onClick={this.handleClickOpenCreate}
-                        >
-                            Thêm tài khoản
-                            <Add
-                                style={{ marginLeft: '0.5em' }}
-                                sx={{ my: 0.5 }}
-                            />
-                        </Button>
-                    </Box>
-
                     <CreateDialog
                         openCreate={this.state.openCreate}
                         showPassword={this.state.showPassword}
@@ -269,7 +224,10 @@ export default class User extends Component {
                         handleCloseCreate={this.handleCloseCreate}
                         handleClickShowPassword={this.handleClickShowPassword}
                         handleMouseDownPassword={this.handleMouseDownPassword}
-                        message={this.props.message}
+                        dialogName={this.state.dialogName}
+                        createLoading={this.props.createLoading}
+                        createSuccess={this.props.createSuccess}
+                        isLoading={this.props.isLoading}
                     />
 
                     <UpdateDialog
@@ -285,6 +243,8 @@ export default class User extends Component {
                         handleClickShowPassword={this.handleClickShowPassword}
                         handleMouseDownPassword={this.handleMouseDownPassword}
                         updateUser={this.props.updateUser}
+                        openRead={this.state.openRead}
+                        dialogName={this.state.dialogName}
                     />
 
                     <DeleteDialog
@@ -294,9 +254,10 @@ export default class User extends Component {
                         handleCloseDelete={this.handleCloseDelete}
                         openDelete={this.state.openDelete}
                         deleteUser={this.props.deleteUser}
+                        dialogName={this.state.dialogName}
                     />
 
-                    <ReadDialog
+                    {/* <ReadDialog
                         openRead={this.state.openRead}
                         showPassword={this.state.showPassword}
                         handleClickOpenRead={this.handleClickOpenRead}
@@ -308,7 +269,7 @@ export default class User extends Component {
                         userStatus={this.state.userStatus}
                         handleClickShowPassword={this.handleClickShowPassword}
                         handleMouseDownPassword={this.handleMouseDownPassword}
-                    />
+                    /> */}
 
                     <LockDialog
                         id={this.state.id}
@@ -322,46 +283,144 @@ export default class User extends Component {
                         handleCloseLock={this.handleCloseLock}
                     />
                 </div>
-                <TableContainer
-                    component={Paper}
-                    className="table-main"
-                    style={{ marginTop: '5vh' }}
-                >
-                    <Table
-                        sx={{ minWidth: 800, border: 1 }}
-                        aria-label="simple table"
-                    >
-                        <TableHead>
-                            <style.StyledTableRow>
-                                <style.StyledTableCell align="center">
-                                    STT
-                                </style.StyledTableCell>
-                                <style.StyledTableCell align="center">
-                                    Tên đăng nhập
-                                </style.StyledTableCell>
-                                <style.StyledTableCell align="center">
-                                    Ngày tạo
-                                </style.StyledTableCell>
-                                <style.StyledTableCell align="center">
-                                    Trạng thái
-                                </style.StyledTableCell>
-                                <style.StyledTableCell align="center">
-                                    Thao tác
-                                </style.StyledTableCell>
-                            </style.StyledTableRow>
-                        </TableHead>
-                        <TableBody>{userItem}</TableBody>
-                    </Table>
-                </TableContainer>
                 <div>
-                    <Stack spacing={2} style={{ margin: '1vh' }}>
-                        <Pagination
-                            color="primary"
-                            count={this.props.totalPage}
-                            page={this.props.activePage}
-                            onChange={this.onChangePagination}
-                        />
-                    </Stack>
+                    <div>
+                        <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
+                            <TextField
+                                id="input-with-sx"
+                                label="tìm kiếm"
+                                variant="standard"
+                                name="textSearch"
+                                value={this.state.textSearch}
+                                onChange={this.onChangeInput}
+                                onKeyDown={e => {
+                                    if (e.key === 'Enter') {
+                                        this.props.searchPaginationUser({
+                                            textSearch: this.state.textSearch,
+                                            activePage: 1,
+                                        })
+                                    }
+                                }}
+                            />
+                            <PersonSearch
+                                color={
+                                    this.state.textSearch ? 'primary' : 'action'
+                                }
+                                sx={{ mr: 1, my: 0.5 }}
+                                onClick={() => {
+                                    this.props.searchPaginationUser({
+                                        textSearch: this.state.textSearch,
+                                        activePage: 1,
+                                    })
+                                }}
+                            />
+                            <Button
+                                style={{ left: '28em' }}
+                                variant="contained"
+                                endIcon={<Add />}
+                                onClick={() => {
+                                    this.handleClickOpenCreate()
+                                    this.setState({
+                                        dialogName: 'Thêm tài khoản',
+                                    })
+                                }}
+                            >
+                                Thêm tài khoản
+                            </Button>
+                        </Box>
+                    </div>
+                    <div>
+                        <TableContainer
+                            component={Paper}
+                            className="table-main"
+                            style={{ marginTop: '5vh' }}
+                        >
+                            <Table
+                                sx={{ minWidth: 800, border: 1 }}
+                                aria-label="simple table"
+                            >
+                                <TableHead>
+                                    <style.StyledTableRow>
+                                        <style.StyledTableCell align="center">
+                                            STT
+                                        </style.StyledTableCell>
+                                        <style.StyledTableCell align="center">
+                                            Tên đăng nhập
+                                        </style.StyledTableCell>
+                                        <style.StyledTableCell align="center">
+                                            Ngày tạo
+                                        </style.StyledTableCell>
+                                        <style.StyledTableCell align="center">
+                                            Trạng thái
+                                        </style.StyledTableCell>
+                                        <style.StyledTableCell align="center">
+                                            Thao tác
+                                        </style.StyledTableCell>
+                                    </style.StyledTableRow>
+                                </TableHead>
+                                <TableBody>{userItem}</TableBody>
+                            </Table>
+                        </TableContainer>
+
+                        <div>
+                            <Alert
+                                severity="info"
+                                variant="outlined"
+                                style={{
+                                    display:
+                                        this.props.listUser.length === 0
+                                            ? 'flex'
+                                            : 'none',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                Không có dữ liệu!
+                                <Button
+                                    onClick={() => {
+                                        this.handleClickOpenCreate()
+                                        this.setState({
+                                            dialogName: 'Thêm tài khoản',
+                                        })
+                                    }}
+                                >
+                                    Thêm tài khoản
+                                </Button>
+                                để bắt đầu!
+                            </Alert>
+                            <Stack spacing={2} style={{ marginTop: '3em' }}>
+                                <Pagination
+                                    style={{
+                                        display:
+                                            this.props.listUser.length === 0
+                                                ? 'none'
+                                                : 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                    }}
+                                    color="primary"
+                                    count={this.props.totalPage}
+                                    page={this.props.activePage}
+                                    onChange={(event, page) => {
+                                        if (page !== this.props.activePage) {
+                                            if (this.props.textSearch) {
+                                                this.props.searchPaginationUser(
+                                                    {
+                                                        textSearch:
+                                                            this.props
+                                                                .textSearch,
+                                                        activePage: page,
+                                                    },
+                                                )
+                                            } else {
+                                                this.props.paginationUser(page)
+                                            }
+                                        }
+                                    }}
+                                />
+                            </Stack>
+                        </div>
+                    </div>
                 </div>
             </div>
         )

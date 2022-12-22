@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-
 import {
     Dialog,
     DialogActions,
@@ -15,7 +14,7 @@ import {
     MenuItem,
 } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
-
+import moment from 'moment'
 export default class Read extends Component {
     state = {
         openRead: false,
@@ -79,7 +78,7 @@ export default class Read extends Component {
                         >
                             <InputLabel>Mật Khẩu *</InputLabel>
                             <Input
-                            disabled
+                                disabled
                                 id="password"
                                 name="password"
                                 value={this.state.password}
@@ -118,11 +117,13 @@ export default class Read extends Component {
                         >
                             <InputLabel shrink>Ngày sinh</InputLabel>
                             <Input
-                            disabled
+                                disabled
                                 id="date-of-birth"
-                                type={'text'}
+                                type={'date'}
                                 name="dateOfBirth"
-                                value={this.state.dateOfBirth}
+                                value={moment(this.state.dateOfBirth).format(
+                                    'YYYY-MM-DD',
+                                )}
                                 onChange={this.onChangeInput}
                             />
                         </FormControl>
@@ -134,7 +135,8 @@ export default class Read extends Component {
                             <InputLabel id="demo-simple-select-standard-label">
                                 Trạng thái
                             </InputLabel>
-                            <Select disabled
+                            <Select
+                                disabled
                                 labelId="demo-simple-select-standard-label"
                                 id="demo-simple-select-standard"
                                 name="userStatus"

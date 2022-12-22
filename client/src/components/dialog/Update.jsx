@@ -19,6 +19,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material'
 export default class Update extends Component {
     state = {
         openUpdate: false,
+        openRead: false,
         showPassword: false,
         id: '',
         username: '',
@@ -31,7 +32,9 @@ export default class Update extends Component {
         if (
             this.props.openUpdate !== this.state.openUpdate ||
             this.props.showPassword !== this.state.showPassword ||
-            this.props.id !== this.state.id
+            this.props.id !== this.state.id ||
+            this.props.openUpdate !== this.state.openUpdate ||
+            this.props.openRead !== this.state.openRead
         ) {
             this.setState({
                 openUpdate: this.props.openUpdate,
@@ -41,6 +44,7 @@ export default class Update extends Component {
                 password: this.props.password,
                 dateOfBirth: this.props.dateOfBirth,
                 userStatus: this.props.userStatus,
+                openRead: this.props.openRead,
             })
         }
     }
@@ -54,10 +58,10 @@ export default class Update extends Component {
         return (
             <div>
                 <Dialog
-                    open={this.state.openUpdate}
+                    open={this.state.openUpdate || this.state.openRead}
                     onClose={this.props.handleCloseUpdate}
                 >
-                    <DialogTitle>Sửa tài khoản</DialogTitle>
+                    <DialogTitle>{this.props.dialogName}</DialogTitle>
                     <DialogContent>
                         <FormControl
                             sx={{ m: 1, width: '65ch' }}
@@ -83,6 +87,7 @@ export default class Update extends Component {
                                 name="password"
                                 value={this.state.password}
                                 onChange={this.onChangeInput}
+                                disabled={this.state.openUpdate ? false : true}
                                 type={
                                     this.state.showPassword
                                         ? 'text'
@@ -123,6 +128,7 @@ export default class Update extends Component {
                                 name="dateOfBirth"
                                 value={this.state.dateOfBirth}
                                 onChange={this.onChangeInput}
+                                disabled={this.state.openUpdate ? false : true}
                             />
                         </FormControl>
 
@@ -140,6 +146,7 @@ export default class Update extends Component {
                                 value={this.state.userStatus}
                                 onChange={this.onChangeInput}
                                 label="Age"
+                                disabled={this.state.openUpdate ? false : true}
                             >
                                 <MenuItem value={'Hoạt động'}>
                                     Hoạt động
@@ -155,6 +162,11 @@ export default class Update extends Component {
                             Đóng
                         </Button>
                         <Button
+                            style={{
+                                display: this.state.openUpdate
+                                    ? 'flex'
+                                    : 'none',
+                            }}
                             variant="contained"
                             color="success"
                             onClick={() => {
