@@ -23,9 +23,7 @@ const mapStateToProps = state => ({
     skip: state.userReducer.skip,
     message: state.userReducer.message,
     textSearch: state.userReducer.textSearch,
-    createLoading: state.userReducer.createLoading,
     isLoading: state.userReducer.isLoading,
-    createSuccess: state.userReducer.createSuccess,
 })
 
 const mapDispatchToProps = dispatch => ({

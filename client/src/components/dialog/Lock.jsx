@@ -35,6 +35,7 @@ export default class Lock extends Component {
     }
 
     render() {
+        const lockText = 'khoá'
         if (this.state.userStatus === 'Hoạt động') {
             return (
                 <div>
@@ -47,9 +48,9 @@ export default class Lock extends Component {
                         </DialogTitle>
                         <DialogContentText align="center">
                             <b>
-                                Bạn có muốn chắc chắn khoá tài khoản này, hành
-                                động này sẽ khiến người dùng không thể truy cập
-                                vào hệ thống!
+                                Bạn có muốn chắc chắn {lockText} tài khoản này,
+                                hành động này sẽ khiến người dùng không thể truy
+                                cập vào hệ thống!
                             </b>
                         </DialogContentText>
                         <DialogActions>

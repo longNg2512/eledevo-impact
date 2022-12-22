@@ -13,38 +13,45 @@ import {
     Button,
     Select,
     MenuItem,
+    Alert,
 } from '@mui/material'
-import { Visibility, VisibilityOff } from '@mui/icons-material'
-
+import {
+    Visibility,
+    VisibilityOff,
+    Add,
+    EditRounded,
+} from '@mui/icons-material'
 export default class Update extends Component {
     state = {
         openUpdate: false,
         openRead: false,
+        openCreate: false,
         showPassword: false,
         id: '',
         username: '',
         password: '',
         dateOfBirth: '',
         userStatus: '',
+        alertMessage: '',
+        openAlert: 'none',
     }
 
     componentDidUpdate() {
         if (
             this.props.openUpdate !== this.state.openUpdate ||
-            this.props.showPassword !== this.state.showPassword ||
-            this.props.id !== this.state.id ||
-            this.props.openUpdate !== this.state.openUpdate ||
-            this.props.openRead !== this.state.openRead
+            this.props.openRead !== this.state.openRead ||
+            this.props.openCreate !== this.state.openCreate ||
+            this.props.id !== this.state.id
         ) {
             this.setState({
+                openCreate: this.props.openCreate,
+                openRead: this.props.openRead,
                 openUpdate: this.props.openUpdate,
-                showPassword: this.props.showPassword,
                 id: this.props.id,
                 username: this.props.username,
                 password: this.props.password,
                 dateOfBirth: this.props.dateOfBirth,
                 userStatus: this.props.userStatus,
-                openRead: this.props.openRead,
             })
         }
     }
@@ -54,31 +61,51 @@ export default class Update extends Component {
             [e.target.name]: e.target.value,
         })
 
+    handleClickOpenAlert = () => {
+        this.setState({ openAlert: '' })
+    }
+
+    handleCloseAlert = () => {
+        this.setState({ openAlert: 'none' })
+    }
+
+    handleClickShowPassword = () => {
+        this.setState({ showPassword: this.state.showPassword ? false : true })
+    }
+
     render() {
         return (
             <div>
                 <Dialog
-                    open={this.state.openUpdate || this.state.openRead}
-                    onClose={this.props.handleCloseUpdate}
+                    open={
+                        this.state.openUpdate ||
+                        this.state.openRead ||
+                        this.state.openCreate
+                    }
+                    onClose={() => {
+                        this.props.handleCloseUpdate()
+                        this.handleCloseAlert()
+                    }}
                 >
                     <DialogTitle>{this.props.dialogName}</DialogTitle>
                     <DialogContent>
                         <FormControl
-                            sx={{ m: 1, width: '65ch' }}
+                            sx={{ m: 1, width: '95%' }}
                             variant="standard"
                         >
                             <InputLabel>Tên đăng nhập *</InputLabel>
                             <Input
+                                autoFocus
                                 id="username"
                                 type={'text'}
                                 name="username"
                                 value={this.state.username}
                                 onChange={this.onChangeInput}
-                                disabled
+                                disabled={this.state.openCreate ? false : true}
                             />
                         </FormControl>
                         <FormControl
-                            sx={{ m: 1, width: '65ch' }}
+                            sx={{ m: 1, width: '95%' }}
                             variant="standard"
                         >
                             <InputLabel>Mật Khẩu *</InputLabel>
@@ -87,7 +114,7 @@ export default class Update extends Component {
                                 name="password"
                                 value={this.state.password}
                                 onChange={this.onChangeInput}
-                                disabled={this.state.openUpdate ? false : true}
+                                disabled={this.state.openRead ? true : false}
                                 type={
                                     this.state.showPassword
                                         ? 'text'
@@ -96,10 +123,8 @@ export default class Update extends Component {
                                 endAdornment={
                                     <InputAdornment position="end">
                                         <IconButton
-                                            aria-label="toggle password visibility"
                                             onClick={
-                                                this.props
-                                                    .handleClickShowPassword
+                                                this.handleClickShowPassword
                                             }
                                             onMouseDown={
                                                 this.props
@@ -117,7 +142,7 @@ export default class Update extends Component {
                             />
                         </FormControl>
                         <FormControl
-                            sx={{ m: 1, width: '65ch' }}
+                            sx={{ m: 1, width: '95%' }}
                             variant="standard"
                         >
                             <InputLabel shrink>Ngày sinh</InputLabel>
@@ -128,25 +153,27 @@ export default class Update extends Component {
                                 name="dateOfBirth"
                                 value={this.state.dateOfBirth}
                                 onChange={this.onChangeInput}
-                                disabled={this.state.openUpdate ? false : true}
+                                disabled={this.state.openRead ? true : false}
                             />
                         </FormControl>
 
                         <FormControl
-                            sx={{ m: 1, width: '65ch' }}
+                            sx={{
+                                m: 1,
+                                width: '95%',
+                                display: this.state.openCreate
+                                    ? 'none'
+                                    : 'flex',
+                            }}
                             variant="standard"
                         >
-                            <InputLabel id="demo-simple-select-standard-label">
-                                Trạng thái
-                            </InputLabel>
+                            <InputLabel>Trạng thái</InputLabel>
                             <Select
-                                labelId="demo-simple-select-standard-label"
-                                id="demo-simple-select-standard"
                                 name="userStatus"
                                 value={this.state.userStatus}
                                 onChange={this.onChangeInput}
                                 label="Age"
-                                disabled={this.state.openUpdate ? false : true}
+                                disabled={this.state.openRead ? true : false}
                             >
                                 <MenuItem value={'Hoạt động'}>
                                     Hoạt động
@@ -156,6 +183,12 @@ export default class Update extends Component {
                                 </MenuItem>
                             </Select>
                         </FormControl>
+                        <Alert
+                            severity="error"
+                            style={{ display: this.state.openAlert }}
+                        >
+                            {this.state.alertMessage}
+                        </Alert>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={this.props.handleCloseUpdate}>
@@ -163,24 +196,62 @@ export default class Update extends Component {
                         </Button>
                         <Button
                             style={{
-                                display: this.state.openUpdate
-                                    ? 'flex'
-                                    : 'none',
+                                display: this.state.openRead ? 'none' : 'flex',
                             }}
+                            endIcon={
+                                this.state.openCreate ? (
+                                    <Add />
+                                ) : (
+                                    <EditRounded />
+                                )
+                            }
                             variant="contained"
                             color="success"
+                            type="submit"
                             onClick={() => {
-                                this.props.updateUser({
-                                    id: this.state.id,
-                                    username: this.state.username,
-                                    password: this.state.password,
-                                    dateOfBirth: this.state.dateOfBirth,
-                                    userStatus: this.state.userStatus,
-                                })
-                                this.props.handleCloseUpdate()
+                                if (!this.state.username) {
+                                    this.setState({
+                                        alertMessage:
+                                            'Vui lòng nhập tên đăng nhập !',
+                                    })
+                                    this.handleClickOpenAlert()
+                                } else if (!this.state.password) {
+                                    this.setState({
+                                        alertMessage:
+                                            'Vui lòng nhập mật khẩu !',
+                                    })
+                                    this.handleClickOpenAlert()
+                                } else if (
+                                    this.state.username &&
+                                    this.state.password &&
+                                    !this.state.id
+                                ) {
+                                    this.props.registerUser({
+                                        username: this.state.username,
+                                        password: this.state.password,
+                                        dateOfBirth: this.state.dateOfBirth,
+                                        userStatus: 'Hoạt động',
+                                    })
+                                    this.props.handleCloseUpdate()
+                                    this.handleClearState()
+                                } else if (
+                                    this.state.username &&
+                                    this.state.password &&
+                                    this.state.id
+                                ) {
+                                    this.props.updateUser({
+                                        id: this.state.id,
+                                        username: this.state.username,
+                                        password: this.state.password,
+                                        dateOfBirth: this.state.dateOfBirth,
+                                        userStatus: this.state.userStatus,
+                                    })
+                                    this.props.handleCloseUpdate()
+                                    this.handleClearState()
+                                }
                             }}
                         >
-                            Cập nhật
+                            {this.props.dialogName}
                         </Button>
                     </DialogActions>
                 </Dialog>
