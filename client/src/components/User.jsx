@@ -279,7 +279,7 @@ export default class User extends Component {
                                     }}
                                 />
                                 <Button
-                                    style={{ left: '28em' }}
+                                    style={{ left: '50%' }}
                                     variant="contained"
                                     endIcon={<Add />}
                                     onClick={() => {

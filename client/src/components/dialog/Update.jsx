@@ -211,11 +211,7 @@ export default class Update extends Component {
                                             'Vui lòng nhập mật khẩu !',
                                     })
                                     this.handleClickOpenAlert()
-                                } else if (
-                                    this.state.username &&
-                                    this.state.password &&
-                                    !this.state.id
-                                ) {
+                                } else if (this.props.openCreate) {
                                     this.props.registerUser({
                                         username: this.state.username,
                                         password: this.state.password,
@@ -223,11 +219,7 @@ export default class Update extends Component {
                                         userStatus: 'Hoạt động',
                                     })
                                     this.props.handleCloseUpdate()
-                                } else if (
-                                    this.state.username &&
-                                    this.state.password &&
-                                    this.state.id
-                                ) {
+                                } else if (this.props.openUpdate) {
                                     this.props.updateUser({
                                         id: this.state.id,
                                         username: this.state.username,
