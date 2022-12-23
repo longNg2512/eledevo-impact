@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import moment from 'moment'
 import UpdateDialog from './dialog/Update'
 import DeleteDialog from './dialog/Delete'
-import LockDialog from './dialog/Lock'
 import * as style from './style'
 import {
     Table,
@@ -46,6 +45,23 @@ export default class User extends Component {
         dialogName: '',
     }
 
+    handleClearState = () => {
+        this.setState({
+            openCreate: false,
+            openUpdate: false,
+            openDelete: false,
+            openRead: false,
+            openLock: false,
+            textSearch: '',
+            id: '',
+            username: '',
+            password: '',
+            userStatus: '',
+            dateOfBirth: moment().format('YYYY-MM-DD'),
+            dialogName: '',
+        })
+    }
+
     handleClickOpenCreate = () => {
         this.setState({ openCreate: true })
     }
@@ -55,18 +71,7 @@ export default class User extends Component {
     }
 
     handleCloseUpdate = () => {
-        this.setState({
-            openUpdate: false,
-            openRead: false,
-            openCreate: false,
-            id: '',
-            username: '',
-            password: '',
-            userStatus: '',
-            dateOfBirth: moment().format('YYYY-MM-DD'),
-            dialogName: '',
-            showPassword: false,
-        })
+        this.handleClearState()
     }
 
     handleClickOpenDelete = () => {
@@ -74,7 +79,7 @@ export default class User extends Component {
     }
 
     handleCloseDelete = () => {
-        this.setState({ openDelete: false })
+        this.handleClearState()
     }
 
     handleClickOpenRead = () => {
@@ -224,40 +229,17 @@ export default class User extends Component {
                 <div>
                     <div>
                         <UpdateDialog
-                            openUpdate={this.state.openUpdate}
-                            openCreate={this.state.openCreate}
-                            openRead={this.state.openRead}
-                            id={this.state.id}
-                            username={this.state.username}
-                            password={this.state.password}
-                            dateOfBirth={this.state.dateOfBirth}
-                            userStatus={this.state.userStatus}
-                            dialogName={this.state.dialogName}
+                            {...this.state}
                             handleCloseUpdate={this.handleCloseUpdate}
                             updateUser={this.props.updateUser}
                             registerUser={this.props.registerUser}
                         />
 
                         <DeleteDialog
-                            username={this.state.username}
-                            id={this.state.id}
-                            handleClickOpenDelete={this.handleClickOpenDelete}
+                            {...this.state}
                             handleCloseDelete={this.handleCloseDelete}
-                            openDelete={this.state.openDelete}
                             deleteUser={this.props.deleteUser}
-                            dialogName={this.state.dialogName}
-                        />
-
-                        <LockDialog
-                            id={this.state.id}
-                            username={this.state.username}
-                            password={this.state.password}
-                            dateOfBirth={this.state.dateOfBirth}
-                            userStatus={this.state.userStatus}
                             updateUser={this.props.updateUser}
-                            openLock={this.state.openLock}
-                            handleClickOpenLock={this.handleClickOpenLock}
-                            handleCloseLock={this.handleCloseLock}
                         />
                     </div>
                     <div>
@@ -302,7 +284,6 @@ export default class User extends Component {
                                     endIcon={<Add />}
                                     onClick={() => {
                                         this.handleClickOpenCreate()
-                                        // this.handleClickOpenUpdate()
                                         this.setState({
                                             dialogName: 'Thêm tài khoản',
                                         })

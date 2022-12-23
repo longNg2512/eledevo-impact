@@ -21,32 +21,22 @@ import {
     Add,
     EditRounded,
 } from '@mui/icons-material'
+import moment from 'moment'
 export default class Update extends Component {
     state = {
-        openUpdate: false,
-        openRead: false,
-        openCreate: false,
         showPassword: false,
         id: '',
         username: '',
         password: '',
-        dateOfBirth: '',
+        dateOfBirth: moment().format('YYYY-MM-DD'),
         userStatus: '',
         alertMessage: '',
         openAlert: 'none',
     }
 
     componentDidUpdate() {
-        if (
-            this.props.openUpdate !== this.state.openUpdate ||
-            this.props.openRead !== this.state.openRead ||
-            this.props.openCreate !== this.state.openCreate ||
-            this.props.id !== this.state.id
-        ) {
+        if (this.props.id !== this.state.id) {
             this.setState({
-                openCreate: this.props.openCreate,
-                openRead: this.props.openRead,
-                openUpdate: this.props.openUpdate,
                 id: this.props.id,
                 username: this.props.username,
                 password: this.props.password,
@@ -78,9 +68,9 @@ export default class Update extends Component {
             <div>
                 <Dialog
                     open={
-                        this.state.openUpdate ||
-                        this.state.openRead ||
-                        this.state.openCreate
+                        this.props.openUpdate ||
+                        this.props.openRead ||
+                        this.props.openCreate
                     }
                     onClose={() => {
                         this.props.handleCloseUpdate()
@@ -101,7 +91,7 @@ export default class Update extends Component {
                                 name="username"
                                 value={this.state.username}
                                 onChange={this.onChangeInput}
-                                disabled={this.state.openCreate ? false : true}
+                                disabled={this.props.openCreate ? false : true}
                             />
                         </FormControl>
                         <FormControl
@@ -114,7 +104,7 @@ export default class Update extends Component {
                                 name="password"
                                 value={this.state.password}
                                 onChange={this.onChangeInput}
-                                disabled={this.state.openRead ? true : false}
+                                disabled={this.props.openRead ? true : false}
                                 type={
                                     this.state.showPassword
                                         ? 'text'
@@ -153,7 +143,7 @@ export default class Update extends Component {
                                 name="dateOfBirth"
                                 value={this.state.dateOfBirth}
                                 onChange={this.onChangeInput}
-                                disabled={this.state.openRead ? true : false}
+                                disabled={this.props.openRead ? true : false}
                             />
                         </FormControl>
 
@@ -161,7 +151,7 @@ export default class Update extends Component {
                             sx={{
                                 m: 1,
                                 width: '95%',
-                                display: this.state.openCreate
+                                display: this.props.openCreate
                                     ? 'none'
                                     : 'flex',
                             }}
@@ -173,7 +163,7 @@ export default class Update extends Component {
                                 value={this.state.userStatus}
                                 onChange={this.onChangeInput}
                                 label="Age"
-                                disabled={this.state.openRead ? true : false}
+                                disabled={this.props.openRead ? true : false}
                             >
                                 <MenuItem value={'Hoạt động'}>
                                     Hoạt động
@@ -196,10 +186,10 @@ export default class Update extends Component {
                         </Button>
                         <Button
                             style={{
-                                display: this.state.openRead ? 'none' : 'flex',
+                                display: this.props.openRead ? 'none' : 'flex',
                             }}
                             endIcon={
-                                this.state.openCreate ? (
+                                this.props.openCreate ? (
                                     <Add />
                                 ) : (
                                     <EditRounded />
@@ -233,7 +223,6 @@ export default class Update extends Component {
                                         userStatus: 'Hoạt động',
                                     })
                                     this.props.handleCloseUpdate()
-                                    this.handleClearState()
                                 } else if (
                                     this.state.username &&
                                     this.state.password &&
@@ -247,7 +236,6 @@ export default class Update extends Component {
                                         userStatus: this.state.userStatus,
                                     })
                                     this.props.handleCloseUpdate()
-                                    this.handleClearState()
                                 }
                             }}
                         >
