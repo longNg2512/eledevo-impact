@@ -30,6 +30,7 @@ function* registerUserSaga(data) {
 
     try {
         const response = yield API.registerUser(data.payload)
+        console.log('saga: ', response)
 
         if (response.success) {
             yield put(
@@ -55,14 +56,12 @@ function* registerUserSaga(data) {
                     }),
                 )
             } else {
-                const responseSearch = yield API.searchPaginationUser({
-                    textSearch: data.payload.username,
-                    activePage: 1,
-                })
                 yield put(
-                    actions.searchPaginationUserRequest({
-                        textSearch: data.payload.username,
-                        activePage: responseSearch.totalPage,
+                    actions.paginationUserSuccess({
+                        listUser: [response.response],
+                        activePage: 1,
+                        totalPage: 1,
+                        skip: 0
                     }),
                 )
             }

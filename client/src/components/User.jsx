@@ -325,7 +325,6 @@ export default class User extends Component {
                                     <TableBody>{userItem}</TableBody>
                                 </Table>
                             </TableContainer>
-
                             <div>
                                 <Alert
                                     severity="info"
